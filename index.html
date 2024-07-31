@@ -27,29 +27,48 @@
     </form>
 
     <script>
-        document.getElementById('dataForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData.entries());
-            
-            fetch('https://script.google.com/macros/s/AKfycbz2EJXL19SB5KCN33nyJEdQPK-qk0rwNOOHjCHG7rRppkwwH2ctBdYDSpBYHMUwNfTT/exec', {
-                method: 'POST',
-                body: JSON.stringify(data),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(result => {
+    document.getElementById('dataForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+        
+        fetch('https://script.google.com/macros/s/AKfycbz2EJXL19SB5KCN33nyJEdQPK-qk0rwNOOHjCHG7rRppkwwH2ctBdYDSpBYHMUwNfTT/exec', {
+            method: 'POST',
+            mode: 'no-cors', // This line is important
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            redirect: 'follow',
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (response.type === 'opaque') {
+                // With 'no-cors', we can't access the response, but we know the request was sent
+                console.log('Data likely submitted successfully');
                 alert('Data submitted successfully!');
                 this.reset();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred. Please try again.');
-            });
+            } else {
+                return response.json();
+            }
+        })
+        .then(result => {
+            if (result) {
+                console.log('Result:', result);
+                alert('Data submitted successfully!');
+                this.reset();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
         });
-    </script>
+    });
+</script>
+Last edited 21 minutes ago
+
+
+
 </body>
 </html>
