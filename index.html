@@ -62,7 +62,14 @@
                 data.referralCode = generateReferralCode();
             }
 
-            fetch('https://script.google.com/macros/s/AKfycbwktVQENuvZS0LSI2Zw-ATacL3CwVIjaaGxAy7J41DLaIA9z8bti2uI3xr_4n3O4MY/exec', {
+            // Generate the referral URL with the query parameter
+            const referralUrl = new URL(window.location.href);
+            referralUrl.searchParams.set('ref', data.referralCode);
+
+            // Add the referral URL to the data object
+            data.referralUrl = referralUrl.toString();
+
+            fetch('https://script.google.com/macros/s/AKfycbyZF3IR5x3hjTfgy0LQLRFP1jrdQ7qDWxRZW933x6v6fcVYJVz6x_5iE2--w4FF7NQl/exec', {
                 method: 'POST',
                 mode: 'no-cors',
                 cache: 'no-cache',
