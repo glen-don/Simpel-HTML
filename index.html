@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Collection Form</title>
+    <title>Referral Sign Up Form</title>
     <style>
         body { font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; }
         form { display: flex; flex-direction: column; }
@@ -12,41 +12,87 @@
     </style>
 </head>
 <body>
-    <h1>Data Collection Form</h1>
-    <form id="dataForm">
+    <h1>Sign Up</h1>
+    <form id="signUpForm">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" required>
         
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required>
         
-        <button type="submit">Submit</button>
+        <label for="marketingConsent">
+            <input type="checkbox" id="marketingConsent" name="marketingConsent">
+            I consent to receive marketing emails
+        </label>
+        
+        <input type="hidden" id="referralCode" name="referralCode">
+        
+        <button type="submit">Sign Up</button>
     </form>
 
     <script>
-    document.getElementById('dataForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        const data = Object.fromEntries(formData.entries());
-        
-        fetch('https://script.google.com/macros/s/AKfycbz2EJXL19SB5KCN33nyJEdQPK-qk0rwNOOHjCHG7rRppkwwH2ctBdYDSpBYHMUwNfTT/exec', {
-            method: 'POST',
-            mode: 'no-cors', // This line is important
-            cache: 'no-cache',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            redirect: 'follow',
-            body: JSON.stringify(data)
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again.');
+        // Function to generate a random string for referral code
+        function generateReferralCode(length = 10) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            return Array.from({length}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+        }
+
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // Check if there's a referral code in the URL
+        const referralCode = getUrlParameter('ref');
+        if (referralCode) {
+            document.getElementById('referralCode').value = referralCode;
+        }
+
+        document.getElementById('signUpForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Generate a new referral code if one doesn't exist
+            if (!data.referralCode) {
+                data.referralCode = generateReferralCode();
+            }
+
+            fetch('https://script.google.com/macros/s/YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL/exec', {
+                method: 'POST',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                redirect: 'follow',
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (response.type === 'opaque') {
+                    console.log('Data likely submitted successfully');
+                    alert('Thank you for signing up! Check your email for your referral link.');
+                    this.reset();
+                } else {
+                    return response.json();
+                }
+            })
+            .then(result => {
+                if (result) {
+                    console.log('Result:', result);
+                    alert('Thank you for signing up! Check your email for your referral link.');
+                    this.reset();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
         });
-    });
-</script>
-
-
+    </script>
 </body>
 </html>
