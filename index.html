@@ -33,8 +33,8 @@
     <script>
         // Function to generate a random string for referral code
         function generateReferralCode(length = 10) {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            return Array.from({length}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        return Array.from({length}, () => chars[Math.floor(Math.random() * chars.length)]).join('') + Date.now().toString(36);
         }
 
         // Function to get URL parameters
@@ -48,7 +48,7 @@
         // Check if there's a referral code in the URL
         const referralCode = getUrlParameter('ref');
         if (referralCode) {
-            document.getElementById('referralCode').value = referralCode;
+        document.getElementById('referralCode').value = referralCode;
         }
 
         document.getElementById('signUpForm').addEventListener('submit', function(e) {
@@ -69,7 +69,7 @@
             // Add the referral URL to the data object
             data.referralUrl = referralUrl.toString();
 
-            fetch('https://script.google.com/macros/s/AKfycbyZF3IR5x3hjTfgy0LQLRFP1jrdQ7qDWxRZW933x6v6fcVYJVz6x_5iE2--w4FF7NQl/exec', {
+            fetch('https://script.google.com/macros/s/AKfycbyny2nP5-m2dzG9ZIP8fAWULHO9LDkZ2Xh4quQDHAVE8-xOKLLPivUqmkM1H-NEZzl9/exec', {
                 method: 'POST',
                 mode: 'no-cors',
                 cache: 'no-cache',
