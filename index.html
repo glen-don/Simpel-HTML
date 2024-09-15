@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="http://localhost:3000/referral-tracker.js?campaign=c4e2d911-f498-4ed7-905e-5a78dfff1943"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Referral Sign Up Form</title>
@@ -30,74 +31,5 @@
         <button type="submit">Sign Up</button>
     </form>
 
-    <script>
-        // Function to generate a random string for referral code
-        function generateReferralCode(length = 10) {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            return Array.from({length}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-        }
-
-        // Function to get URL parameters
-        function getUrlParameter(name) {
-            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-            var results = regex.exec(location.search);
-            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-        }
-
-        // Check if there's a referral code in the URL
-        const referrerCode = getUrlParameter('ref');
-        if (referrerCode) {
-            document.getElementById('referrerCode').value = referrerCode;
-        }
-
-        document.getElementById('signUpForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData.entries());
-            
-            // Generate a new referral code for this user
-            data.referralCode = generateReferralCode();
-
-            // Generate the referral URL with the query parameter
-            const referralUrl = new URL(window.location.href);
-            referralUrl.searchParams.set('ref', data.referralCode);
-
-            // Add the referral URL to the data object
-            data.referralUrl = referralUrl.toString();
-
-            fetch('https://script.google.com/macros/s/AKfycbxWjFeDLNY0ilp5HNjEQ2QC-GJxcEBSg1VaUGSSD8Ejg1uRw1ONX4Nu8mcZHET8WNBh/exec', {
-                method: 'POST',
-                mode: 'no-cors',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                redirect: 'follow',
-                body: JSON.stringify(data)
-            })
-            .then(response => {
-                if (response.type === 'opaque') {
-                    console.log('Data likely submitted successfully');
-                    alert('Thank you for signing up! Check your email for your referral link.');
-                    this.reset();
-                } else {
-                    return response.json();
-                }
-            })
-            .then(result => {
-                if (result) {
-                    console.log('Result:', result);
-                    alert('Thank you for signing up! Check your email for your referral link.');
-                    this.reset();
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred. Please try again.');
-            });
-        });
-    </script>
 </body>
 </html>
